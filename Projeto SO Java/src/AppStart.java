@@ -11,12 +11,13 @@ public class AppStart {
 
         do
         {
-            System.out.println("Que algoritmo deseja correr?\n 1- AJE++\n 2- Concorrencial Base\n 3- Concorrencial Avançado");
+            System.out.println("Que algoritmo deseja correr?\n 1- AJE++\n 2- Concorrencial Base\n 3- Concorrencial Avançado\n 0 - Terminar Programa");
             Scanner scan = new Scanner(System.in);
             int mode = scan.nextInt();
 
-            if(mode == 1)
+            switch(mode)
             {
+                case 1:
                 System.out.println("Introduza os parametros necessarios para correr o algoritmo:\n " +
                         "filename,numero de caminhos,tempo limite,chance de mutação");
 
@@ -28,18 +29,20 @@ public class AppStart {
 
                 AJE aje = new AJE();
                 aje.start(filename, pathSize, time, chance);
-            }
-            else if(mode == 2)
-            {
+                
+                break;
+
+                case 2:
+            
                 System.out.println("Introduza os parametros necessarios para correr o algoritmo:\n " +
                         "filename,numero de threads,numero de caminhos,tempo limite,chance de mutação");
 
-                String[] parameters = scan.next().split(",");
-                String filename = parameters[0];
-                int threadNum = Integer.parseInt(parameters[1]);
-                int pathSize = Integer.parseInt(parameters[2]);
-                int time = Integer.parseInt(parameters[3]);
-                double chance = Double.parseDouble(parameters[4]);
+                String[] parameters2 = scan.next().split(",");
+                String filename2 = parameters2[0];
+                int threadNum = Integer.parseInt(parameters2[1]);
+                int pathSize2 = Integer.parseInt(parameters2[2]);
+                int time2 = Integer.parseInt(parameters2[3]);
+                double chance2 = Double.parseDouble(parameters2[4]);
 
                 int[] resultList = new int[threadNum];
 
@@ -47,7 +50,7 @@ public class AppStart {
 
                 for(int i = 1; i < threadNum+1; i++)
                 {
-                    Base thread = new Base(i, filename, pathSize, time, chance, threadNum);
+                    Base thread = new Base(i, filename2, pathSize2, time2, chance2, threadNum);
                     thread.start();
                 }
 
@@ -55,18 +58,28 @@ public class AppStart {
 
                 bestPathSolution(resultList);
 
+                break;
+
                 /*
                 System.out.print("Quantas threads deseja criar? ");
                 int numThreads = scan.nextInt();
                 Base b = new Base();
                 b.start(numThreads);
                  */
+
+                case 0:
+                System.out.println("Programa Terminado!");
+                System.exit(0);
+
+                break;
             }
 
             System.out.print("Deseja continuar? ");
             res = scan.next();
         }
-        while(res == "n" || res == "nao" || res == "Nao");
+        while();
+
+        //res == "n" || res == "nao" || res == "Nao"
     }
 
     private static void bestPathSolution(int[] resultList)
