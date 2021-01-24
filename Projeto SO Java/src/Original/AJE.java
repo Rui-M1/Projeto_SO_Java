@@ -13,17 +13,6 @@ public class AJE{
     private Random rand = new Random();;
     private Scanner scan = new Scanner(System.in);;
 
-    //para efeito de teste inicial, depois é imported
-    /*
-    private int[][] matrix = {
-        {0, 23, 10, 4, 1},
-        {23, 0, 9, 5, 4},
-        {10, 9, 0, 8, 2},
-        {4, 5, 8, 0, 11},
-        {1, 4, 2, 11, 0}
-    };
-     */
-
     private int pathSize;
     private int n;
     private int[][] matrix;
@@ -31,17 +20,8 @@ public class AJE{
 
     public AJE(){}
 
-    //isto é para testar se o algoritmo funciona sem a populacao
-    //de dados com os valores que o stor da
-    /*private void Test()
+    private void importValues(String filename)
     {
-
-    }*/
-
-    private void importValues()
-    {
-        System.out.print("Indique o nome do ficheiro que pretende importar:  //indicar aoenas o nome do ficheiro sem tipo ");
-        String filename = scan.nextLine();
 
         String path = "tsp_testes\\";
 
@@ -66,25 +46,17 @@ public class AJE{
                 }
                 i++;
             }
-            scanFile.close();
         }
         catch (FileNotFoundException e){ e.printStackTrace(); }
 
     }
 
-    public void start()
+    public void start(String filename, int pathSize, int time, double mutationChance)
     {
-        importValues();
 
-        //n = 5; // isto é temporario porque depois é imported
+        importValues(filename);
 
-        System.out.print("Quantos caminhos deseja criar? ");
-        pathSize = scan.nextInt();
-
-        System.out.print("Durante quantas interações deseja que o programa corra: ");
-        int interactions = scan.nextInt();
-
-        int currentInteraction = 0;
+        this.pathSize = pathSize;
 
         ArrayList<int[]> paths = new ArrayList<>();
         int[] goodPath1 = new int[n];
@@ -93,8 +65,9 @@ public class AJE{
         populatePaths(paths);
         printPathsArray(paths);
 
-        while(currentInteraction != interactions)
+        for(int i = 0; i < time+1; i++)
         {
+
             goodPath1 = evaluatePaths(paths);
             paths.remove(goodPath1);
             goodPath2 = evaluatePaths(paths);
@@ -107,22 +80,20 @@ public class AJE{
             PMXCrossover pmx = new PMXCrossover();
             pmx.pmxCrossover(goodPath1, goodPath2, goodPathChild1, goodPathChild2, n, rand);
 
+            double prob = 0 + (1 - 0) * rand.nextDouble();
 
-            int prob = rand.nextInt(100) + 1;
-            if(prob <= 5)
+            if(prob <= mutationChance)
             {
                 applyMutation(goodPathChild1, goodPathChild2);
                 postMutationExchange(goodPathChild1, goodPathChild2, paths);
             }
 
-            //TODO: ver o porque de isto demorar bueeee tempo a chegar aqui e resolver
-            // printPathsArray(paths);
-
-            currentInteraction++;
+            bestPath = goodPath1;
         }
 
-        bestPath = goodPath1;
-
+        //sem esta linha o codigo da classe Base dá erro pois considera impossivel ir buscar a função getBestPathSum
+        // pós execução da função start desta classe
+        int bestPathSum = getBestPathSum();
     }
 
     private void populatePaths(ArrayList<int[]> paths)
@@ -137,11 +108,10 @@ public class AJE{
 
                 int dist = rand.nextInt(n);
 
-                //TODO: fazer de maneira a que nao existam randoms repetidos
                 if(j > 0 && dist == path[curr-1]) {
                     do
                     {
-                        dist = rand.nextInt(5);
+                        dist = rand.nextInt(n);
                     }while (path[curr-1] == dist);
                 }
                 path[j] = dist;
@@ -150,7 +120,6 @@ public class AJE{
         }
     }
 
-    //TODO: verificar se ha melhor solução | resolver array error
     private int[] evaluatePaths(ArrayList<int[]> paths)
     {
         int[] goodPath = new int[n];
@@ -163,7 +132,6 @@ public class AJE{
             {
                 int curr = i;
                 if(curr+1 != n-1)
-                    //TODO: ex4 arrebenta aqui tentar perceber porque e resolver
                     arraySum += matrix[path[curr]][path[curr++]];
                 else
                     arraySum += matrix[path[curr]][path[0]];
@@ -300,5 +268,21 @@ public class AJE{
     public int[] getBestPath()
     {
         return bestPath;
+    }
+
+    public int getBestPathSum()
+    {
+        int bestSum = 0;
+
+        for(int i = 0; i < bestPath.length; i++)
+        {
+            int curr = i;
+            if(curr+1 != n-1)
+                bestSum += matrix[bestPath[curr]][bestPath[curr++]];
+            else
+                bestSum += matrix[bestPath[curr]][bestPath[0]];
+        }
+
+        return bestSum;
     }
 }

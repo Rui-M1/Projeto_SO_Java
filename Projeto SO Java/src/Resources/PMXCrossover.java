@@ -60,7 +60,7 @@ public class PMXCrossover {
 
         for (i = 0; i < n+1; i++)
             System.out.printf("%2d ",replacement2[i]);
-        System.out.println();
+        System.out.println("\n\n");
 
         //fill in remaining slots with replacements
         for(i = 0; i < n; i++)
@@ -72,21 +72,24 @@ public class PMXCrossover {
 
                 n2 = parent2[i];
                 m2 = replacement2[n2];
-                while (m1 != -1)
+                while (n1 == -1)
                 {
                     n1 = m1;
                     m1 = replacement1[m1];
+                    //System.out.println(m1);
                 }
-                while (m2 != -1)
+                while (n2 == -1)
                 {
                     n2 = m2;
                     m2 = replacement2[m2];
+
                 }
+
+                //System.out.println("survived the whiles");
+
                 offSpring1[i] = n1;
                 offSpring2[i] = n2;
             }
         }
-
     }
-
 }

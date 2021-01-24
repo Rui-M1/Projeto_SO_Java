@@ -1,38 +1,61 @@
 package Concorrencial.Base;
 
+import Original.AJE;
+
 import java.util.ArrayList;
+import java.util.concurrent.Semaphore;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-public class Base {
+import static java.lang.Thread.sleep;
 
-    private ArrayList<Thread> threads = new ArrayList<>();
-    private int numberOfThreads;
+public class Base extends Thread {
 
-    public Base(){}
+    static Storage storage;
+    int index;
+    String fileName;
+    int pathSize;
+    int time;
+    double chanceOfMutation;
+    int[] bestPath;
+    int bestPathSum;
 
-    public void start(int numberThreads)
+    public static Semaphore mutex = new Semaphore(1);
+
+    public Base(int index, String fileName,
+                int pathSize, int time, double chanceOfMutation, int numThreads)
     {
-        for(int i = 0; i < numberThreads; i++)
-        {
-            BaseThread thread = new BaseThread();
-            threads.add(thread);
-        }
-
-        numberOfThreads = numberThreads;
+        this.index = index;
+        this.fileName = fileName;
+        this.pathSize = pathSize;
+        this.time = time;
+        this.chanceOfMutation = chanceOfMutation;
+        storage = new Storage(numThreads);
     }
 
-    private void threadExecution()
+    @Override
+    public void run()
     {
-        Storage storage = new Storage(numberOfThreads);
-
-
-        for (Thread t : threads)
+        try
         {
-           // int[] bestPath = t.start();
-        System.out.print("Passei aqui: threadExecution ");
+            mutex.acquire();
+            AJE aje = new AJE();
+            aje.start(fileName, pathSize, time, chanceOfMutation);
+            Thread.sleep(5000);
+            bestPathSum = aje.getBestPathSum();
+            System.out.println(bestPathSum);
+            System.out.println(index);
+            storage.set(index, bestPathSum);
+            Thread.sleep(5000);
+            mutex.release();
+        }
+        catch (InterruptedException e)
+        {
+            Logger.getLogger(Base.class.getName()).log(Level.SEVERE, null, e);
         }
     }
 
-    static class Storage
+    public static class Storage
     {
         int numOfThreads;
         int[] storage;
@@ -41,10 +64,10 @@ public class Base {
         public Storage(int numOfThreads)
         {
             this.numOfThreads = numOfThreads;
-            storage = new int[numOfThreads];
+            storage = new int[numOfThreads+1];
         }
 
-        synchronized void set(int index, int value)
+        public synchronized void set(int index, int value)
         {
             this.storage[index] = value;
             numberThreadUpdate++;
@@ -54,7 +77,7 @@ public class Base {
             }
         }
 
-        synchronized int[] get()
+        public synchronized int[] get()
         {
             try
             {
