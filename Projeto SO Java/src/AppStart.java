@@ -8,6 +8,7 @@ public class AppStart {
     public static void main(String[] args)
     {
         String res;
+        int continuarCorrer = 0;
 
         do
         {
@@ -60,13 +61,6 @@ public class AppStart {
 
                 break;
 
-                /*
-                System.out.print("Quantas threads deseja criar? ");
-                int numThreads = scan.nextInt();
-                Base b = new Base();
-                b.start(numThreads);
-                 */
-
                 case 0:
                 System.out.println("Programa Terminado!");
                 System.exit(0);
@@ -74,23 +68,36 @@ public class AppStart {
                 break;
             }
 
-            System.out.print("Deseja continuar? ");
-            res = scan.next();
+                do
+                {System.out.print("Deseja continuar? (S/N)");
+                res = scan.next();
+            
+                switch(res){
+                    case "s":
+                    case "S":
+                    continuarCorrer = 0;
+                    break;
+                    case "N":
+                    case "n":
+                    System.out.println("Programa Terminado!");
+                    continuarCorrer = 1;
+                    System.exit(0);
+                    break;
+                }
+                }
+                while(res != "s" || res !="S" || res != "n" || res != "N") ;
+                scan.close();
         }
-        while();
+        while(continuarCorrer == 0);
 
-        //res == "n" || res == "nao" || res == "Nao"
     }
 
-    private static void bestPathSolution(int[] resultList)
-    {
+    private static void bestPathSolution(int[] resultList) {
         int bestSolution = 0;
 
-        for(int i = 0; i < resultList.length; i++)
-        {
+        for (int i = 0; i < resultList.length; i++) {
             int curr = i;
-            if(resultList[curr] < resultList[curr+1])
-            {
+            if (resultList[curr] < resultList[curr + 1]) {
                 bestSolution = resultList[i];
             }
         }
